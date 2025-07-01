@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "agent_app",
+    "slug": "agent_app",
+    "scheme": "agent_app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio.",
+        "NSCameraUsageDescription": "This app needs access to the camera.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library.",
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.teqmavens.agentapp"
+    },
+    "android": {
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.teqmavens.agentapp"
+    },
+    "plugins": [
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "MICROPHONE",
+            "CAMERA",
+            "PHOTO_LIBRARY"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fe24c8e9-14ca-464b-bb1f-499a59188f8c"
+      }
+    }
+  }
+}
