@@ -1,61 +1,54 @@
-'use dom'; // (Possibly a typo, should be 'use client' or similar for React server/client components)
+import { useCallback } from "react";
+import { useConversation } from "@11labs/react";
+import { View, Pressable, StyleSheet } from "react-native";
+import type { Message } from "../components/ChatMessage";
+import { Mic } from "lucide-react-native";
+import tools from "../utils/tools";
 
-import { useConversation } from '@elevenlabs/react'; // Custom hook for managing conversation state with the ElevenLabs agent
-import { Mic } from 'lucide-react-native'; // Microphone icon component
-import { useCallback } from 'react'; // React hook for memoizing functions
-import { View, Pressable, StyleSheet } from 'react-native'; // React Native UI components
-
-import tools from '../utils/tools'; // Import custom utility functions
-
-// Function to request microphone permission (works only in web, not React Native)
 async function requestMicrophonePermission() {
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true }); // Request audio permission
+    await navigator.mediaDevices.getUserMedia({ audio: true });
     return true;
   } catch (error) {
     console.log(error);
-    console.error('Microphone permission denied');
+    console.error("Microphone permission denied");
     return false;
   }
 }
 
-// Main component for the conversational AI button
 export default function ConvAiDOMComponent({
-  platform, // Platform string (e.g., 'ios', 'android', 'web')
-  get_battery_level, // Tool: function to get battery level
-  change_brightness, // Tool: function to change brightness
-  flash_screen, // Tool: function to flash the screen
+  platform,
+  get_battery_level,
+  change_brightness,
+  flash_screen,
 }: {
-  dom?: import('expo/dom').DOMProps; // (Optional) DOM props for Expo web
+  dom?: import('expo/dom').DOMProps;
   platform: string;
   get_battery_level: typeof tools.get_battery_level;
   change_brightness: typeof tools.change_brightness;
   flash_screen: typeof tools.flash_screen;
 }) {
-  // Initialize conversation state and event handlers
   const conversation = useConversation({
-    onConnect: () => console.log('Connected'), // Called when connected
-    onDisconnect: () => console.log('Disconnected'), // Called when disconnected
+    onConnect: () => console.log('Connected'),
+    onDisconnect: () => console.log('Disconnected'),
     onMessage: (message) => {
-      console.log(message); // Called on new message
+      console.log(message);
     },
-    onError: (error) => console.error('Error:', error), // Called on error
+    onError: (error) => console.error('Error:', error),
   });
-
-  // Function to start the conversation session
   const startConversation = useCallback(async () => {
     try {
-      // Request microphone permission before starting
+      // Request microphone permission
       const hasPermission = await requestMicrophonePermission();
       if (!hasPermission) {
         alert('No permission');
         return;
       }
-      // Start the conversation session with agent and tools
+      // Start the conversation with your agent
       await conversation.startSession({
-        agentId: 'agent_01jyjnt7hjfa1ag325mj6tt1n3', // Your agent's ID
+        agentId: 'agent_01jyjnt7hjfa1ag325mj6tt1n3', // Replace with your agent ID
         dynamicVariables: {
-          platform, // Pass platform info
+          platform,
         },
         clientTools: {
           get_battery_level,
@@ -68,59 +61,60 @@ export default function ConvAiDOMComponent({
     }
   }, [conversation]);
 
-  // Function to stop the conversation session
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
   }, [conversation]);
 
-  // Render a pressable button that starts/stops the conversation
   return (
     <Pressable
       style={[
         styles.callButton,
-        conversation.status === 'connected' && styles.callButtonActive, // Change style if connected
+        conversation.status === "connected" && styles.callButtonActive,
       ]}
       onPress={
-        conversation.status === 'disconnected'
-          ? startConversation // Start if disconnected
-          : stopConversation // Stop if connected
+        conversation.status === "disconnected"
+          ? startConversation
+          : stopConversation
       }
     >
-    
       <View
         style={[
           styles.buttonInner,
-          conversation.status === 'connected' && styles.buttonInnerActive, // Change style if connected
+          conversation.status === "connected" && styles.buttonInnerActive,
         ]}
       >
-        <Mic size={32} color="#E2E8F0" strokeWidth={1.5} style={styles.buttonIcon} /> {/* Microphone icon */}
+        <Mic
+          size={32}
+          color="#E2E8F0"
+          strokeWidth={1.5}
+          style={styles.buttonIcon}
+        />
       </View>
     </Pressable>
   );
 }
 
-// Styles for the button and icon
 const styles = StyleSheet.create({
   callButton: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 24,
   },
   callButtonActive: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)', // Red tint when active
+    backgroundColor: "rgba(239, 68, 68, 0.2)",
   },
   buttonInner: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#3B82F6', // Blue background
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#3B82F6',
+    backgroundColor: "#3B82F6",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#3B82F6",
     shadowOffset: {
       width: 0,
       height: 0,
@@ -130,10 +124,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonInnerActive: {
-    backgroundColor: '#EF4444', // Red background when active
-    shadowColor: '#EF4444',
+    backgroundColor: "#EF4444",
+    shadowColor: "#EF4444",
   },
   buttonIcon: {
-    transform: [{ translateY: 2 }], // Slightly move icon down
+    transform: [{ translateY: 2 }],
   },
 });

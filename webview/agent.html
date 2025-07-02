@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent WebView</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; }
+    #status { margin-bottom: 1em; }
+    #mic { font-size: 2em; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="status">Click the mic to start talking</div>
+  <button id="mic">🎤</button>
+  <script>
+    const status = document.getElementById('status');
+    const micBtn = document.getElementById('mic');
+    let stream;
+    micBtn.onclick = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        status.textContent = 'Microphone access granted!';
+        // Example: send a message to React Native
+        window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'agent_message',
+          message: { source: 'webview', message: 'Microphone access granted!' }
+        }));
+      } catch (e) {
+        status.textContent = 'Microphone access denied.';
+        window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'agent_message',
+          message: { source: 'webview', message: 'Microphone access denied.' }
+        }));
+      }
+    };
+  </script>
+</body>
+</html>
